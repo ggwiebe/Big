@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/util
+						http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean id="cacheconfig.cfg" class="org.apache.ignite.configuration.IgniteConfiguration" abstract="true">
+
+		<property name="cacheConfiguration">
+			<list>
+				<bean id="offerMetadataCache" name="offerMetadataCache" class="org.apache.ignite.configuration.CacheConfiguration">
+					<property name="name" value="SQL_OFFER_METADATA_EPE" />
+					<property name="sqlSchema" value="EPE_PERF" />
+					<property name="cacheMode" value="REPLICATED" />
+					<property name="backups" value="1" />
+					<property name="partitionLossPolicy" value="READ_ONLY_ALL" />
+					<property name="atomicityMode" value="ATOMIC" />
+					<property name="queryEntities">
+						<list>
+							<bean class="org.apache.ignite.cache.QueryEntity">
+								<property name="tableName" value="OFFER_METADATA" />
+								<property name="keyType" value="com.albertsons.epe.metadata.connector.model.OfferMetadataKey" />
+								<property name="valueType" value="com.albertsons.epe.metadata.connector.model.OfferMetadataModel" />
+								<property name="fields">
+									<map>
+										<entry key="offerId" value="java.lang.String" />
+										<entry key="status" value="java.lang.String" />
+										<entry key="source" value="java.lang.String" />
+										<entry key="startDate" value="java.sql.Timestamp" />
+										<entry key="endDate" value="java.sql.Timestamp" />
+										<entry key="stores" value="java.util.Set" />
+										<entry key="customerCondition" value="java.lang.String" />
+										<entry key="payload" value="java.lang.String" />
+										<entry key="createdDate" value="java.sql.Timestamp" />
+										<entry key="lastUpdatedDate" value="java.sql.Timestamp" />
+									</map>
+								</property>
+								<property name="indexes">
+									<list>
+										<bean class="org.apache.ignite.cache.QueryIndex">
+											<constructor-arg>
+												<list>
+													<value>offerId</value>
+													<value>startDate</value>
+													<value>endDate</value>
+												</list>
+											</constructor-arg>
+											<constructor-arg value="SORTED" />
+										</bean>
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+				</bean>
+				<bean id="offerLookupDataCache" class="org.apache.ignite.configuration.CacheConfiguration">
+					<property name="cacheMode" value="PARTITIONED" />
+					<property name="name" value="SQL_OFFER_LOOKUP_EPE" />
+					<property name="sqlSchema" value="EPE_PERF" />
+					<property name="backups" value="1" />
+					<property name="partitionLossPolicy" value="READ_ONLY_ALL" />
+					<property name="atomicityMode" value="ATOMIC" />
+					<property name="keyConfiguration">
+						<bean class="org.apache.ignite.cache.CacheKeyConfiguration">
+							<property name="typeName" value="com.albertsons.epe.lookup.connector.model.OfferLookupDataKey" />
+							<property name="affinityKeyFieldName" value="id" />
+						</bean>
+					</property>
+					<property name="queryEntities">
+						<list>
+							<bean class="org.apache.ignite.cache.QueryEntity">
+								<property name="tableName" value="OFFER_LOOKUP" />
+								<property name="keyType" value="com.albertsons.epe.lookup.connector.model.OfferLookupDataKey" />
+								<property name="valueType" value="com.albertsons.epe.lookup.connector.model.OfferLookupDataModel" />
+								<property name="fields">
+									<map>
+										<entry key="offerId" value="java.lang.String" />
+										<entry key="extOfferId" value="java.lang.String" />
+										<entry key="id" value="java.lang.String" />
+										<entry key="type" value="java.lang.String" />
+										<entry key="condition" value="java.lang.String" />
+										<entry key="benefit" value="java.lang.String" />
+										<entry key="indicator" value="java.lang.String" />
+										<entry key="createdDate" value="java.sql.Timestamp" />
+										<entry key="lastUpdatedDate" value="java.sql.Timestamp" />
+										<entry key="stores" value="java.util.Set" />
+									</map>
+								</property>
+								<property name="indexes">
+									<list>
+										<bean class="org.apache.ignite.cache.QueryIndex">
+											<constructor-arg value="id" />
+										</bean>
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+				</bean>
+				<bean id="offerLookupStoreDataCache" class="org.apache.ignite.configuration.CacheConfiguration">
+					<property name="cacheMode" value="PARTITIONED" />
+					<property name="name" value="SQL_OFFER_LOOKUP_STORE_EPE" />
+					<property name="sqlSchema" value="EPE_PERF" />
+					<property name="backups" value="1" />
+					<property name="partitionLossPolicy" value="READ_ONLY_ALL" />
+					<property name="atomicityMode" value="ATOMIC" />
+					<property name="keyConfiguration">
+						<bean class="org.apache.ignite.cache.CacheKeyConfiguration">
+							<property name="typeName" value="com.albertsons.epe.lookup.store.connector.model.OfferLookupStoreDataKey" />
+							<property name="affinityKeyFieldName" value="storeId" />
+						</bean>
+					</property>
+					<property name="queryEntities">
+						<list>
+							<bean class="org.apache.ignite.cache.QueryEntity">
+								<property name="tableName" value="OFFER_LOOKUP_STORE" />
+								<property name="keyType" value="com.albertsons.epe.lookup.store.connector.model.OfferLookupStoreDataKey" />
+								<property name="valueType" value="com.albertsons.epe.lookup.store.connector.model.OfferLookupStoreDataModel" />
+								<property name="fields">
+									<map>
+										<entry key="offerId" value="java.lang.String" />
+										<entry key="storeId" value="java.lang.String" />
+										<entry key="createdDate" value="java.sql.Timestamp" />
+										<entry key="lastUpdatedDate" value="java.sql.Timestamp" />
+									</map>
+								</property>
+								<property name="indexes">
+									<list>
+										<bean class="org.apache.ignite.cache.QueryIndex">
+											<constructor-arg value="storeId" />
+										</bean>
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+				</bean>
+				<bean id="clipCache" class="org.apache.ignite.configuration.CacheConfiguration">
+					<property name="cacheMode" value="PARTITIONED" />
+					<property name="backups" value="1" />
+					<property name="name" value="SQL_CLIP_EPE" />
+					<property name="sqlSchema" value="EPE_PERF" />
+					<property name="partitionLossPolicy" value="READ_ONLY_ALL" />
+					<property name="atomicityMode" value="ATOMIC" />
+					<property name="keyConfiguration">
+						<bean class="org.apache.ignite.cache.CacheKeyConfiguration">
+							<property name="typeName" value="com.albertsons.epe.clip.connector.model.ClipDataKey" />
+							<property name="affinityKeyFieldName" value="hhId" />
+						</bean>
+					</property>
+					<property name="queryEntities">
+						<list>
+							<bean class="org.apache.ignite.cache.QueryEntity">
+								<property name="tableName" value="CLIP" />
+								<property name="keyType" value="com.albertsons.epe.clip.connector.model.ClipDataKey" />
+								<property name="valueType" value="com.albertsons.epe.clip.connector.model.ClipDataModel" />
+								<property name="fields">
+									<map>
+										<entry key="clipId" value="java.lang.String" />
+										<entry key="storeId" value="java.lang.String" />
+										<entry key="hhId" value="java.lang.String" />
+										<entry key="offerId" value="java.lang.String" />
+										<entry key="extOfferId" value="java.lang.String" />
+										<entry key="status" value="java.lang.String" />
+										<entry key="clipTimestamp" value="java.sql.Timestamp" />
+										<entry key="createdDate" value="java.sql.Timestamp" />
+										<entry key="lastUpdatedDate" value="java.sql.Timestamp" />
+									</map>
+								</property>
+								<property name="indexes">
+									<list>
+										<bean class="org.apache.ignite.cache.QueryIndex">
+											<constructor-arg value="hhId" />
+										</bean>
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+				</bean>
+				<bean id="usagesCache" class="org.apache.ignite.configuration.CacheConfiguration">
+					<property name="cacheMode" value="PARTITIONED" />
+					<property name="name" value="SQL_USAGES_EPE" />
+					<property name="sqlSchema" value="EPE_PERF" />
+					<property name="backups" value="1" />
+					<property name="partitionLossPolicy" value="READ_ONLY_ALL" />
+					<property name="atomicityMode" value="ATOMIC" />
+					<property name="KeyConfiguration">
+						<bean class="org.apache.ignite.cache.CacheKeyConfiguration">
+							<property name="typeName" value="com.albertsons.epe.usage.connector.model.UsageDataKey" />
+							<property name="affinityKeyFieldName" value="hhId" />
+						</bean>
+					</property>
+					<property name="queryEntities">
+						<list>
+							<bean class="org.apache.ignite.cache.QueryEntity">
+								<property name="tableName" value="USAGES" />
+								<property name="keyType" value="com.albertsons.epe.usage.connector.model.UsageDataKey" />
+								<property name="valueType" value="com.albertsons.epe.usage.connector.model.UsageDataModel" />
+								<property name="fields">
+									<map>
+										<entry key="offerId" value="java.lang.String" />
+										<entry key="hhId" value="java.lang.String" />
+										<entry key="count" value="java.lang.Long" />
+										<entry key="storeId" value="java.lang.String" />
+										<entry key="transactionId" value="java.lang.Long" />
+										<entry key="status" value="java.lang.String" />
+										<entry key="laneNumber" value="java.lang.Integer" />
+										<entry key="transactionTimestamp" value="java.sql.Timestamp" />
+										<entry key="createdDate" value="java.sql.Timestamp" />
+										<entry key="lastUpdatedDate" value="java.sql.Timestamp" />
+									</map>
+								</property>
+								<property name="indexes">
+									<list>
+										<bean class="org.apache.ignite.cache.QueryIndex">
+											<constructor-arg>
+												<list>
+													<value>offerId</value>
+													<value>hhId</value>
+												</list>
+											</constructor-arg>
+											<constructor-arg value="SORTED" />
+										</bean>
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+				</bean>
+
+			</list>
+		</property>
+	</bean>
+
+</beans>

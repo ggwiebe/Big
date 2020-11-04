@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <import resource="Big-server-cache.xml" />
+
+    <bean id="main.cfg" class="org.apache.ignite.configuration.IgniteConfiguration" parent="cache.cfg">
+        <property name="igniteInstanceName" value="Big"/>
+
+        <property name="sqlConfiguration">
+            <bean class="org.apache.ignite.configuration.SqlConfiguration">
+                <property name="sqlSchemas">
+                    <list>
+                        <value>BIG</value>
+                        <value>TRAIN</value>
+                    </list>
+                </property>
+            </bean>
+        </property>
+
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="ipFinder">
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
+                        <property name="addresses">
+                            <list>
+                                <value>127.0.0.1:47500..47510</value>
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+
+        <property name="clientConnectorConfiguration">
+            <bean class="org.apache.ignite.configuration.ClientConnectorConfiguration">
+            </bean>
+        </property>
+
+        <property name="dataStorageConfiguration">
+            <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+                <property name="defaultDataRegionConfiguration">
+                    <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+                        <property name="metricsEnabled" value="true"/>
+                        <property name="persistenceEnabled" value="true"/>
+                    </bean>
+                </property>
+
+                <property name="storagePath" value="db_big"/>
+                <property name="metricsEnabled" value="true"/>
+            </bean>
+        </property>
+
+        <property name="tracingSpi">
+            <bean class="org.apache.ignite.spi.tracing.opencensus.OpenCensusTracingSpi"/>
+        </property>
+
+
+    </bean>
+</beans>
